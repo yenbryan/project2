@@ -34,6 +34,8 @@ def upload_profile_picture(request):
     if request.method == 'POST':
         picture_form = PictureForm(request.POST, request.FILES)
         if picture_form.is_valid():
+            # Calling picture_form.save() should handle making this for you.
+            # You may just need to use commit=False so that you can assign request.user to profile
             pic = ProfilePicture(description=picture_form.cleaned_data['description'],
                           image=picture_form.cleaned_data['picture'],
                           profile=Profile.objects.get(id=request.user.id))
@@ -43,13 +45,14 @@ def upload_profile_picture(request):
 
 @login_required()
 def dashboard(request):
+    # profile should be equal to request.user, you don't need to re-get it from the db
     profile = Profile.objects.get(id=request.user.id)
     about_me_form = AboutMeForm(initial={'description':request.user.about_me})
     profile_form = ProfileForm(initial={'first_name': request.user.first_name,
                                         'last_name': request.user.last_name})
     try:
         profile_picture = ProfilePicture.objects.get(profile=profile, default_picture=True)
-    except:
+    except ProfilePicture.DoesNotExist:
         profile_picture = None
     received_messages = Receiver.objects.filter(recipient=request.user)
     return render(request, 'profile/dashboard.html', {'dashboard': 'active',
@@ -79,4 +82,5 @@ def ajax_about_me_update(request):
         data = json.loads(request.body)
         about_me_form = AboutMeForm(request.POST)
         if about_me_form.is_valid():
+            # Should be able to use the model form's save() method
             Profile(about_me=about_me_form.cleaned_data['description']).save()
