@@ -23,6 +23,7 @@ def discussions(request):
 
 @login_required()
 def view_discussion(request, discussion_id):
+    # Might need a try/except in case there is a bad discussion_id passed in
     discussion = Discussion.objects.get(id=discussion_id)
     comments = Comment.objects.filter(discussion=discussion)
     comment_form = CommentForm()
@@ -36,6 +37,7 @@ def view_discussion(request, discussion_id):
 def add_comment(request, discussion_id):
     if request.method=='POST':
         comment_form = CommentForm(request.POST)
+        # CommentForm should be able to handle the saving with save()
         if comment_form.is_valid():
             comment = Comment.objects.create(text=comment_form.cleaned_data['text'],
                                          poster=request.user,
