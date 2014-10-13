@@ -6,7 +6,7 @@ class Profile(AbstractUser):
     about_me = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.username
+        return u"{}".format(self.username)
 
 
 class ProfilePicture(models.Model):
