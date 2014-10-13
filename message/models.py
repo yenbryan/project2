@@ -14,6 +14,7 @@ class Message(models.Model):
     def __unicode__(self):
         return self.title
 
+# Couldn't recipient just be a field on Message?
 class Receiver(models.Model):
     message = models.ForeignKey(Message, related_name='receivers')
     recipient = models.ForeignKey(Profile, related_name='receivers')
